@@ -1,1 +1,1 @@
-# iwillnotpayforleetcodeautopremium
+# iwillnotpayforleetcodepremium
