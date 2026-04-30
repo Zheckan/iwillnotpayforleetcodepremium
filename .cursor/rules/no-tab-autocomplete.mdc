@@ -1,0 +1,20 @@
+---
+description: Disable tab autocomplete for LeetCode practice — forces thinking
+globs: problems/**/*
+---
+
+# No Tab Autocomplete in Problem Solutions
+
+When working on files in the `problems/` directory:
+
+- Do NOT use tab completion to write solution logic
+- Do NOT suggest or auto-complete algorithmic code
+- Do NOT provide the solution, even partially
+- You may autocomplete:
+  - Import statements
+  - Type definitions and interfaces
+  - Test harness / boilerplate code
+  - Console.log statements for debugging
+  - Helper class definitions (ListNode, TreeNode, etc.)
+
+The purpose of this repo is to practice problem-solving. Autocompleting solutions defeats the purpose.

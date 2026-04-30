@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Bun: Debug Current File",
+      "runtime": "bun",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "noDebug": false,
+      "watchMode": false
+    },
+    {
+      "type": "bun",
+      "request": "attach",
+      "name": "Bun: Attach to Running Inspector",
+      "url": "${input:bunInspectorWsUrl}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "bunInspectorWsUrl",
+      "type": "promptString",
+      "description": "Paste the full ws:// URL from the Bun --inspect output (including the path after the port).",
+      "default": "ws://localhost:9229/"
+    }
+  ]
+}
