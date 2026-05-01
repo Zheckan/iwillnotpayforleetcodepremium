@@ -628,7 +628,27 @@ async function convertHtmlToMarkdown(
     return ''
   }
 
-  const prompt = `Convert the following LeetCode HTML snippet from the section "${context.section}" of the problem "${context.title}" (${context.difficulty}) into GitHub-flavored Markdown. Preserve math expressions, inline code, and intentional lists. Output Markdown only with no additional commentary.\n\nHTML:\n${snippet}`
+  const prompt = [
+    'You are an HTML-to-Markdown converter. Your output is written verbatim to a README file.',
+    '',
+    'OUTPUT RULES (mandatory):',
+    '- Output ONLY the converted GitHub-flavored Markdown.',
+    '- Do NOT include any preamble, planning, explanation, or commentary about your task.',
+    '- Do NOT start with phrases like "Here is", "Here\'s", "Thus", "So:", "We need to", "The output is", "I will", or any meta-commentary.',
+    '- Do NOT repeat the input HTML.',
+    '- Do NOT output the same sentence twice.',
+    '- Do NOT mention "Markdown", "HTML", or your conversion process.',
+    '- Preserve: math notation, inline code (`backticks`), markdown image links (e.g. ![alt](path)), emphasis, lists.',
+    '- Convert: <strong>/<b> → **bold**, <em>/<i> → _italic_, <code> → `code`.',
+    '- Strip: wrapper tags like <p>, <div>, <section>.',
+    '',
+    `Context: section "${context.section}" of LeetCode problem "${context.title}" (${context.difficulty}).`,
+    '',
+    'INPUT HTML:',
+    snippet,
+    '',
+    'OUTPUT MARKDOWN:',
+  ].join('\n')
 
   const response = await fetch(`${OLLAMA_ENDPOINT}/api/generate`, {
     method: 'POST',
@@ -651,11 +671,86 @@ async function convertHtmlToMarkdown(
   }
 
   const json = (await response.json()) as { response?: string }
-  const markdown = typeof json?.response === 'string' ? json.response.trim() : ''
-  if (!markdown) {
+  const raw = typeof json?.response === 'string' ? json.response.trim() : ''
+  if (!raw) {
     throw new Error('ollama returned empty output')
   }
-  return markdown
+  return stripMetaCommentary(raw)
+}
+
+/**
+ * Safety net: strip meta-commentary that LLMs sometimes leak when converting HTML.
+ *
+ * Common failure modes we've observed (gpt-oss:20b):
+ *   - "We need to preserve math expressions, inline code... Thus:\n\nGiven a string..."
+ *   - "Here is the markdown:\n\n# Title..."
+ *   - Output the answer, then repeat the answer prefixed by "Thus:" or similar.
+ *
+ * Strategy:
+ *   1. Drop leading lines matching known meta patterns until we find real content.
+ *   2. If the output ends with a duplicate of an earlier paragraph (preamble + answer + repeated answer),
+ *      detect and trim. This is a conservative pass; if we can't be confident, leave it.
+ */
+function stripMetaCommentary(raw: string): string {
+  const META_PREFIXES = [
+    /^we need to\b/i,
+    /^we should\b/i,
+    /^we will\b/i,
+    /^we want\b/i,
+    /^let'?s\b/i,
+    /^here'?s\b/i,
+    /^here is\b/i,
+    /^here are\b/i,
+    /^the output\b/i,
+    /^the markdown\b/i,
+    /^the final\b/i,
+    /^the result\b/i,
+    /^thus\b/i,
+    /^therefore\b/i,
+    /^so\s*[:,]?\s*$/i,
+    /^so\s*[:,]/i,
+    /^also\b/i,
+    /^output\s*[:]/i,
+    /^markdown\s*[:]/i,
+    /^that'?s it\b/i,
+    /^ensure\b/i,
+    /^note that the\b/i, // model commentary, not problem note
+    /\bcommentary\b/i,
+    /\bbacktick\b/i,
+  ]
+
+  // Step 1: drop leading meta lines (cap at 20 to avoid eating real content).
+  let lines = raw.split('\n')
+  let stripped = 0
+  while (lines.length > 0 && stripped < 20) {
+    const first = lines[0].trim()
+    if (!first) {
+      lines.shift()
+      stripped += 1
+      continue
+    }
+    const isMeta = META_PREFIXES.some((rx) => rx.test(first))
+    if (!isMeta) break
+    lines.shift()
+    stripped += 1
+  }
+
+  // Step 2: detect and trim "preamble + answer + duplicated answer" pattern.
+  // If the same non-trivial line appears twice and the second occurrence is at the
+  // start of a duplicate section, keep only one copy.
+  const cleaned = lines.join('\n').trim()
+  const sentences = cleaned.split(/\n{2,}/)
+  if (sentences.length >= 2) {
+    const half = Math.floor(sentences.length / 2)
+    const firstHalf = sentences.slice(0, half).join('\n\n')
+    const secondHalf = sentences.slice(half).join('\n\n')
+    // If second half is an exact substring continuation of the first half's content, dedupe.
+    if (firstHalf.length > 40 && secondHalf.startsWith(firstHalf)) {
+      return firstHalf.trim()
+    }
+  }
+
+  return cleaned
 }
 
 function decodeHtmlPreservingNewlines(html: string): string {
