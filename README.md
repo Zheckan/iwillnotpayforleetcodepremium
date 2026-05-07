@@ -11,7 +11,7 @@ An opinionated LeetCode-style practice workspace that uses AI as a coach, not as
 
 This repository is a public shell of my private LeetCode interview-prep repo. It is generated from `.opensource/` rules in that private repo, so changes here normally arrive through snapshot commits from `Premium Avoidance Bot`.
 
-The public mirror contains the reusable workflow: problem-fetch tooling, templates, algorithm notes, API references, agent instructions, editor settings, and formatting hooks. It does not include the private solved problem archive, personal progress notes, interview notes, private Git history, or generated LeetCode problem statements/images.
+The public mirror contains the reusable workflow: problem-fetch tooling, templates, algorithm notes, API references, agent instructions, editor settings, and formatting hooks. It does not include the private solved problem archive, personal progress notes, interview plans, STAR stories, recruiter notes, private Git history, or generated LeetCode problem statements/images.
 
 ## What This Is
 
@@ -70,7 +70,7 @@ This repo includes public workflow instructions for AI coding assistants:
 - `AGENTS.md` and `CLAUDE.md` define the coaching rules.
 - `.agents/skills/fetch-problem/SKILL.md` describes how an assistant should fetch and present a new problem.
 - `.agents/skills/update-progress/SKILL.md` describes how an assistant should maintain a local progress tracker.
-- `.claude/skills/` mirrors the same flow for Claude-style skill loading.
+- `.claude/skills/` mirrors the same flow for Claude-style skill loading. In the private source repo these are symlinks to `.agents/skills/`.
 - `.cursor/rules/` tells Cursor to guide rather than solve.
 
 The core rule is simple: the assistant should help you think, not write the solution for you.

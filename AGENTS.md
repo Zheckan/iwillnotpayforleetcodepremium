@@ -67,6 +67,10 @@ cp PROGRESS.example.md PROGRESS.md
 
 `PROGRESS.md` is local-only and should not be exported by the public mirror.
 
+### Private Prep Material
+
+The private source repository may contain interview-specific plans, STAR stories, and recruiter notes under private folders such as `prep/`. Those files are intentionally excluded from the public mirror. Public users should keep their own plans and behavioral notes outside tracked public files, or use local-only files ignored by Git.
+
 ### Interview Simulation
 
 When asked to run interview mode:

@@ -102,7 +102,7 @@ For **numbers** — look up the problem title from the study plan in AGENTS.md o
 
 If the number isn't in this table, try passing the number as the title — the script's dataset lookup can often resolve it.
 
-For **"next problem"** — read PROGRESS.md and AGENTS.md to determine what the user should work on next based on their current phase/day and what's already been solved.
+For **"next problem"** — read `PROGRESS.md`. If `prep/README.md` exists, read it and the active plan referenced there. If `google-frequent-problems.md` exists, use it for Google-priority selection. In the public mirror these private files may be absent; fall back to `AGENTS.md` and the current progress state.
 
 ### Language selection
 

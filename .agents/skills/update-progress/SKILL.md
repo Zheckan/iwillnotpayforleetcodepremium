@@ -18,6 +18,7 @@ Update if the user has moved to a new phase or day:
 - **Phase** — only changes when all problems in a phase are done
 - **Day** — increments when the user starts a new training day
 - **Branch** — should match the current git branch (`git branch --show-current`)
+- **Active plan** — in the private repo, should point at the canonical private plan under `prep/`, not the root compatibility pointer. In the public mirror, `prep/` may be absent and local users can choose their own tracker layout.
 
 ### 2. Problem Log
 
@@ -66,18 +67,19 @@ Add or update today's row with a summary of everything accomplished. Keep it con
 Follow these steps in order:
 
 1. **Read current PROGRESS.md** — know what's already tracked
-2. **Check git state** — `git branch --show-current` for the branch, `git diff --name-only` to see what files changed
-3. **Scan the problems directory** — look for new or modified solution files:
+2. **Read prep/README.md and the active plan if present** — know what today's intended work was. If `prep/` is absent, fall back to `AGENTS.md` and `PROGRESS.md`.
+3. **Check git state** — `git branch --show-current` for the branch, `git diff --name-only` to see what files changed
+4. **Scan the problems directory** — look for new or modified solution files:
    ```bash
    find problems/ -name "solution.*" -newer PROGRESS.md
    ```
-4. **Review conversation history** — this is the most important source. Walk through the conversation and identify:
+5. **Review conversation history** — this is the most important source. Walk through the conversation and identify:
    - Which problems were discussed
    - Whether the user solved them or got stuck
    - What hints were given (more hints = `needs-review`)
    - What concepts were discussed
    - Whether tests passed
-5. **Read solution files** — for any problems worked on, check if the solution file has actual code (not just the template)
+6. **Read solution files** — for any problems worked on, check if the solution file has actual code (not just the template)
 
 ## Writing the updates
 
