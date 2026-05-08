@@ -14,7 +14,7 @@ This skill describes the full day lifecycle for the LeetCode prep repo. It is in
 These hold for every day, no exceptions:
 
 1. **One branch per day:** `day-{N}/{YYYY-MM-DD}` cut from `main`.
-2. **One PR per day:** opened at the first commit of the day, updated with each subsequent push.
+2. **One PR per day:** opened as draft at the first commit of the day, updated with each subsequent push, and marked ready for review at day end.
 3. **Never auto-merge.** PRs stay open as a record. The user merges manually if/when they want to.
 4. **PROGRESS.md is the single source of truth.** Every state change goes there, in real time, by the agent — not the user.
 5. **README/PROGRESS housekeeping is the agent's job, not the user's.** Don't ask the user to update tracking files.
@@ -149,7 +149,8 @@ Triggered when: user says "let's stop for today", "wrap up", "done for today", "
    ```bash
    gh pr edit {PR#} --body "..."
    ```
-5. **Do not merge.** Confirm to user: "PR #{N} updated and left open as record. See you tomorrow."
+5. **Mark PR ready for review.** If the PR is still a draft, run `gh pr ready {PR#}` after the body update.
+6. **Do not merge.** Confirm to user: "PR #{N} updated, marked ready for review, and left open as record. See you tomorrow."
 
 ---
 
